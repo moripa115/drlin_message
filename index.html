@@ -10,16 +10,13 @@
     body {
       margin: 0;
       font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
-      /* 基本の背景色 */
       background: #faf0e6;
       color: #4a4a4a;
-      /* 画面全体をクリック可能にするため高さと幅を指定 */
       min-height: 100vh;
-      position: relative;
-      overflow-x: hidden; /* 横スクロール防止 */
+      overflow-x: hidden;
     }
 
-    /* ===== 花の背景（CSSで表現） ===== */
+    /* ===== 背景の装飾 ===== */
     .flowers {
       position: fixed;
       top: 0;
@@ -35,7 +32,6 @@
         radial-gradient(circle at 85% 75%, rgba(219, 144, 152, 0.6) 0%, transparent 40%),
         radial-gradient(circle at 50% 50%, rgba(255, 210, 210, 0.5) 0%, transparent 60%),
         radial-gradient(circle at 80% 10%, rgba(235, 170, 175, 0.5) 0%, transparent 30%);
-      /* クリックイベントを透過させる（背景をクリックしても反応するように） */
       pointer-events: none;
     }
 
@@ -46,7 +42,7 @@
     /* ===== 手紙本体 ===== */
     .letter {
       position: relative;
-      z-index: 1;
+      z-index: 10; /* 背景より上 */
       max-width: 640px;
       margin: 80px auto;
       padding: 64px 40px;
@@ -55,11 +51,46 @@
       border-radius: 4px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
       line-height: 2.2;
-      /* 手紙の上でのクリックも検知できるようにする */
-      pointer-events: auto; 
     }
 
-    /* ... (中略：date, subject, to, p, divider, closing, footerのスタイルは変更なし) ... */
+    /* ===== 絵文字を表示する専用レイヤー（最前面） ===== */
+    #emoji-container {
+      position: fixed; /* 画面に固定 */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999; /* 確実に一番手前に表示 */
+      pointer-events: none; /* ここをクリックしても下の文字を選択できるようにする */
+      overflow: hidden;
+    }
+
+    .emoji-pop {
+      position: absolute;
+      font-size: 1.8rem;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none;
+      will-change: transform, opacity; /* アニメーションを滑らかに */
+      animation: popAndFade 1s ease-out forwards;
+    }
+
+    @keyframes popAndFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+      }
+      20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -150%) scale(1) rotate(-10deg);
+      }
+    }
+
+    /* 以下、手紙の装飾クラス */
     .date { text-align: right; font-size: 0.9rem; color: #8c8c8c; margin-bottom: 32px; }
     .subject { font-size: 1.6rem; font-weight: 500; margin-bottom: 48px; color: #8c5e5e; letter-spacing: 0.05em; }
     .subject::after { content: ""; display: block; width: 40px; height: 1px; background: #dbb0b4; margin-top: 24px; }
@@ -68,48 +99,24 @@
     .divider { text-align: center; margin: 60px 0; color: #d8b5b8; font-size: 1.2rem; opacity: 0.8; }
     .closing { margin-top: 64px; text-indent: 0; }
     footer { margin-top: 64px; text-align: right; font-size: 0.95rem; color: #555; }
-    @media (max-width: 480px) { .letter { margin: 40px 20px; padding: 40px 24px; } .subject { font-size: 1.4rem; } }
-
-
-    /* ===== ポップアップする絵文字のスタイル ===== */
-    .emoji-pop {
-      position: absolute;
-      font-size: 2rem; /* 絵文字のサイズ */
-      /* クリックした位置が中心になるように調整 */
-      transform: translate(-50%, -50%);
-      /* 絵文字がクリックを邪魔しないようにする */
-      pointer-events: none;
-      z-index: 100; /* 最前面に表示 */
-      /* アニメーションの設定（1秒かけてふわっと消える） */
-      animation: popAndFade 1s ease-out forwards;
+    
+    @media (max-width: 480px) {
+      .letter { margin: 40px 20px; padding: 40px 24px; }
+      .subject { font-size: 1.4rem; }
     }
-
-    /* 絵文字のアニメーション定義 */
-    @keyframes popAndFade {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.5); /* 最初は小さく透明 */
-      }
-      20% {
-        opacity: 1;
-        transform: translate(-50%, -60%) scale(1.2); /* 少し上に移動しながら大きくなる */
-      }
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -100%) scale(1); /* さらに上に移動しながら消える */
-      }
-    }
-
   </style>
 </head>
 
 <body>
   <div class="flowers"></div>
+  
+  <div id="emoji-container"></div>
 
   <main class="letter">
     <div class="date">2026年1月</div>
     <div class="subject">林ゼミでの学びと感謝</div>
     <div class="to">林先生</div>
+
     <p>林ゼミに入ってからの1年と数ヶ月は、これまでのどの時間よりもあっという間でした。それでも振り返ると、どの月にも確かに大事な出来事があり、私は日々、皆に支えられて生き延びてきたのだと思います。</p>
     <div class="divider">＊</div>
     <p>私はゼミに入る前、正直に言うと、大学生活を心から楽しめているとは言えませんでした。コロナ禍での入学ということもあり、大学生活の始め方が分からず、友人を作ることにとても苦労をした覚えがあります。</p>
@@ -131,7 +138,7 @@
   </main>
 
   <script>
-    // --- 既存のスクロール処理 ---
+    // --- 背景のスクロール表示処理 ---
     const flowers = document.querySelector('.flowers');
     window.addEventListener('scroll', () => {
       if (window.scrollY > 20) {
@@ -141,34 +148,63 @@
       }
     });
 
-    // --- 新追加：クリックで絵文字を出す処理 ---
+    // --- 絵文字ポップアップ処理 ---
+    const container = document.getElementById('emoji-container');
     const emojis = ['🌸', '🐟', '🌳'];
+    let lastTime = 0;
 
-    document.addEventListener('click', function(e) {
-      // 1. ランダムな絵文字を選ぶ
+    // 絵文字を生成する関数
+    function spawnEmoji(x, y) {
+      const now = Date.now();
+      // 0.05秒(50ms)に1回に頻度を上げて反応を良くする
+      if (now - lastTime < 50) return; 
+      lastTime = now;
+
       const randomIndex = Math.floor(Math.random() * emojis.length);
-      const selectedEmoji = emojis[randomIndex];
+      const span = document.createElement('span');
+      span.textContent = emojis[randomIndex];
+      span.classList.add('emoji-pop');
+      
+      // 画面上の固定位置(clientX/Y)を使用することで座標ズレを防ぐ
+      span.style.left = x + 'px';
+      span.style.top = y + 'px';
 
-      // 2. 絵文字を表示する要素を作成
-      const emojiSpan = document.createElement('span');
-      emojiSpan.textContent = selectedEmoji;
-      emojiSpan.classList.add('emoji-pop');
+      container.appendChild(span);
 
-      // 3. クリックした位置に配置
-      // e.pageX, e.pageY は文書全体からの座標
-      emojiSpan.style.left = e.pageX + 'px';
-      emojiSpan.style.top = e.pageY + 'px';
-
-      // 4. bodyに追加して表示させる
-      document.body.appendChild(emojiSpan);
-
-      // 5. アニメーションが終わった頃（1秒後）に要素を削除する
-      // これをしないと画面外に要素が溜まり続けてしまうため
+      // アニメーション終了後に削除
       setTimeout(() => {
-        emojiSpan.remove();
+        span.remove();
       }, 1000);
-    });
-  </script>
+    }
 
+    // PC: マウス移動
+    window.addEventListener('mousemove', (e) => {
+      spawnEmoji(e.clientX, e.clientY);
+    });
+
+    // スマホ: タッチ移動（指を滑らせている時）
+    window.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      if (touch) {
+        spawnEmoji(touch.clientX, touch.clientY);
+      }
+    }, { passive: true }); // passive: true でスクロール性能を阻害しない
+
+    // スマホ/PC: タップ・クリックした瞬間
+    window.addEventListener('click', (e) => {
+      lastTime = 0; // クリック時は強制的に出す
+      spawnEmoji(e.clientX, e.clientY);
+    });
+    
+    // スマホ: 画面に触れた瞬間
+    window.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      if (touch) {
+        lastTime = 0;
+        spawnEmoji(touch.clientX, touch.clientY);
+      }
+    }, { passive: true });
+
+  </script>
 </body>
 </html>
