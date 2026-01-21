@@ -1,54 +1,174 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <title>ご報告と御礼</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>林ゼミでの学びと感謝</title>
+
   <style>
     body {
-      font-family: "Hiragino Mincho ProN", serif;
-      background: #ffffff;
-      color: #222;
-      line-height: 1.9;
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+      /* 基本の背景色 */
+      background: #faf0e6;
+      color: #4a4a4a;
+      /* 画面全体をクリック可能にするため高さと幅を指定 */
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden; /* 横スクロール防止 */
     }
-    .container {
-      max-width: 700px;
+
+    /* ===== 花の背景（CSSで表現） ===== */
+    .flowers {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      background-color: #faf0e6;
+      background-image: 
+        radial-gradient(circle at 15% 25%, rgba(219, 144, 152, 0.6) 0%, transparent 40%),
+        radial-gradient(circle at 85% 75%, rgba(219, 144, 152, 0.6) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(255, 210, 210, 0.5) 0%, transparent 60%),
+        radial-gradient(circle at 80% 10%, rgba(235, 170, 175, 0.5) 0%, transparent 30%);
+      /* クリックイベントを透過させる（背景をクリックしても反応するように） */
+      pointer-events: none;
+    }
+
+    .flowers.is-visible {
+      opacity: 1;
+    }
+
+    /* ===== 手紙本体 ===== */
+    .letter {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
       margin: 80px auto;
-      padding: 0 20px;
+      padding: 64px 40px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(4px);
+      border-radius: 4px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+      line-height: 2.2;
+      /* 手紙の上でのクリックも検知できるようにする */
+      pointer-events: auto; 
     }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 40px;
+
+    /* ... (中略：date, subject, to, p, divider, closing, footerのスタイルは変更なし) ... */
+    .date { text-align: right; font-size: 0.9rem; color: #8c8c8c; margin-bottom: 32px; }
+    .subject { font-size: 1.6rem; font-weight: 500; margin-bottom: 48px; color: #8c5e5e; letter-spacing: 0.05em; }
+    .subject::after { content: ""; display: block; width: 40px; height: 1px; background: #dbb0b4; margin-top: 24px; }
+    .to { margin-bottom: 32px; font-size: 1.1rem; }
+    p { margin: 0 0 40px; text-indent: 1em; text-align: justify; }
+    .divider { text-align: center; margin: 60px 0; color: #d8b5b8; font-size: 1.2rem; opacity: 0.8; }
+    .closing { margin-top: 64px; text-indent: 0; }
+    footer { margin-top: 64px; text-align: right; font-size: 0.95rem; color: #555; }
+    @media (max-width: 480px) { .letter { margin: 40px 20px; padding: 40px 24px; } .subject { font-size: 1.4rem; } }
+
+
+    /* ===== ポップアップする絵文字のスタイル ===== */
+    .emoji-pop {
+      position: absolute;
+      font-size: 2rem; /* 絵文字のサイズ */
+      /* クリックした位置が中心になるように調整 */
+      transform: translate(-50%, -50%);
+      /* 絵文字がクリックを邪魔しないようにする */
+      pointer-events: none;
+      z-index: 100; /* 最前面に表示 */
+      /* アニメーションの設定（1秒かけてふわっと消える） */
+      animation: popAndFade 1s ease-out forwards;
     }
-    footer {
-      margin-top: 60px;
-      font-size: 0.9rem;
-      color: #555;
+
+    /* 絵文字のアニメーション定義 */
+    @keyframes popAndFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5); /* 最初は小さく透明 */
+      }
+      20% {
+        opacity: 1;
+        transform: translate(-50%, -60%) scale(1.2); /* 少し上に移動しながら大きくなる */
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -100%) scale(1); /* さらに上に移動しながら消える */
+      }
     }
+
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>ご報告と御礼</h1>
+  <div class="flowers"></div>
 
-    <p>
-      〇〇先生<br>
-      日頃よりご指導いただき、ありがとうございます。
-    </p>
-
-    <p>
-      本ページでは、〇〇の授業（ゼミ）を通して学んだこと、
-      そして今後どのように活かしていきたいかをご報告させていただきます。
-      ！！！！！！！
-    </p>
-
-    <p>
-      （本文）
-    </p>
-
+  <main class="letter">
+    <div class="date">2026年1月</div>
+    <div class="subject">林ゼミでの学びと感謝</div>
+    <div class="to">林先生</div>
+    <p>林ゼミに入ってからの1年と数ヶ月は、これまでのどの時間よりもあっという間でした。それでも振り返ると、どの月にも確かに大事な出来事があり、私は日々、皆に支えられて生き延びてきたのだと思います。</p>
+    <div class="divider">＊</div>
+    <p>私はゼミに入る前、正直に言うと、大学生活を心から楽しめているとは言えませんでした。コロナ禍での入学ということもあり、大学生活の始め方が分からず、友人を作ることにとても苦労をした覚えがあります。</p>
+    <p>民法や経済の授業を自宅のPCから垂れ流す無味乾燥な日々を送る中で、「自分はちゃんと大学生をしているのだろうか」と、どこか置いていかれたような気持ちでいました。</p>
+    <div class="divider">＊</div>
+    <p>そんな中で林ゼミに入り、初めて「大学で学んでいる」という実感を持つことができました。真面目で、一生懸命で、学ぶことに誠実な人たちに囲まれ、久しぶりに「勉強が楽しい」と感じました。</p>
+    <p>議論に参加すること、本を読むこと、分からないことを調べること、歴史を知ること、ちゃんと自分の言葉にまとめて発表すること。その一つひとつが新鮮で、刺激的でした。</p>
+    <div class="divider">＊</div>
+    <p>金曜3限の時間はさることながら、先生が中国の文化・美術について話が脱線していく時間が大好きでした。興味を持って中国美術史や曼荼羅の講義をとるなかで、シルクロードを通じた交流史に、壮大なロマンを感じたことを覚えています。</p>
+    <p>林ゼミは、私にとって「強くなる場所」ではなく、迷いながら考え続けていい場所でした。そして、自然体で、前向きで、本当に素晴らしい仲間と出会えた場所です。</p>
+    <div class="closing">
+      林ゼミで得た学びを、今後の人生やさまざまな選択に丁寧に活かしていきたいと考えております。<br />
+      これまでのご指導に、心より感謝申し上げます。
+    </div>
     <footer>
-      法学部政治学科4年<br>
+      法学部 政治学科 4年<br />
       森 遥
     </footer>
-  </div>
+  </main>
+
+  <script>
+    // --- 既存のスクロール処理 ---
+    const flowers = document.querySelector('.flowers');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) {
+        flowers.classList.add('is-visible');
+      } else {
+        flowers.classList.remove('is-visible');
+      }
+    });
+
+    // --- 新追加：クリックで絵文字を出す処理 ---
+    const emojis = ['🌸', '🐟', '🌳'];
+
+    document.addEventListener('click', function(e) {
+      // 1. ランダムな絵文字を選ぶ
+      const randomIndex = Math.floor(Math.random() * emojis.length);
+      const selectedEmoji = emojis[randomIndex];
+
+      // 2. 絵文字を表示する要素を作成
+      const emojiSpan = document.createElement('span');
+      emojiSpan.textContent = selectedEmoji;
+      emojiSpan.classList.add('emoji-pop');
+
+      // 3. クリックした位置に配置
+      // e.pageX, e.pageY は文書全体からの座標
+      emojiSpan.style.left = e.pageX + 'px';
+      emojiSpan.style.top = e.pageY + 'px';
+
+      // 4. bodyに追加して表示させる
+      document.body.appendChild(emojiSpan);
+
+      // 5. アニメーションが終わった頃（1秒後）に要素を削除する
+      // これをしないと画面外に要素が溜まり続けてしまうため
+      setTimeout(() => {
+        emojiSpan.remove();
+      }, 1000);
+    });
+  </script>
+
 </body>
 </html>
